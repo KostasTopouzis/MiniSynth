@@ -7,7 +7,7 @@ A simple, one-octave interactive piano keyboard built with Python's Tkinter libr
 ---
 ## Screenshot
 
-![MiniSynth v1.0 Screenshot](MiniSynth/docs/images/mini_synth_v1.0.gif)
+![MiniSynth v1.0 Screenshot](docs/images/mini_synth_v1.0.gif)
 
 ---
 ## 🎹 Features (v1.0)
