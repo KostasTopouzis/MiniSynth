@@ -1,18 +1,18 @@
-# MiniSynth v1.0
+# MiniSynth v1.1
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 
-A simple, one-octave interactive piano keyboard built with Python's Tkinter library. This project serves as a foundational example of GUI development and event handling for audio applications, created as part of a guided career development journey.
+A simple, multi-octave interactive piano keyboard built with Python's Tkinter library. This project serves as a foundational example of GUI development and event handling for audio applications, created as part of a guided career development journey.
 
 ---
 ## Screenshot
 
-![MiniSynth v1.0 Screenshot](docs/images/mini_synth_v1.0.gif)
+![MiniSynth v1.1 Screenshot](docs/images/mini_synth_v1.1.gif)
 
 ---
-## 🎹 Features (v1.0)
+## 🎹 Features (v1.1)
 
-* A fully interactive, one-octave piano keyboard GUI.
+* A fully interactive, multi-octave piano keyboard GUI.
 * Visual feedback for both white keys (themed `ttk` widgets) and black keys (classic `tk` widgets).
 * Event handling for each key press, which prints the corresponding note to the console.
 * Clean, well-documented, and modular code structure with a professional entry point.
@@ -38,14 +38,13 @@ A simple, one-octave interactive piano keyboard built with Python's Tkinter libr
     ```
 4.  Run the main script:
     ```bash
-    python mini_synth_v1.0.py
+    python mini_synth_v1.1.py
     ```
 
 ---
 ## 🔜 Future Goals (for v1.1 and beyond)
 
 * Implement a real-time audio engine with PyAudio and NumPy to produce sound.
-* Add multi-octave support.
 
 ---
 ## 🐛 Troubleshooting
@@ -57,7 +56,7 @@ On some Windows systems, the default terminal cannot display special Unicode cha
 1.  **Run from the Command Line with the UTF-8 flag:**
     Execute the script using this command instead of the standard one:
     ```bash
-    python -X utf8 mini_synth_v1.0.py
+    python -X utf8 mini_synth_v1.1.py
     ```
 
 2.  **Configure VS Code's Runner (`launch.json`):**
