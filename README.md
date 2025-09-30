@@ -1,27 +1,29 @@
-# MiniSynth v1.1
+# MiniSynth v1.2
 
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org) [![NumPy](https://img.shields.io/badge/Numpy-777BB4?style=for-the-badge&logo=numpy&logoColor=white)](https://numpy.org) [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/KostasTopouzis/MiniSynth)
 
-A simple, multi-octave interactive piano keyboard built with Python's Tkinter library. This project serves as a foundational example of GUI development and event handling for audio applications, created as part of a guided career development journey.
+A simple, multi-octave synthesizer built with Python. This version introduces a real-time audio engine with a non-blocking callback architecture, allowing for sustained notes. This project serves as a foundational example of GUI development and real-time audio handling, created as part of a guided career development journey.
 
 ---
 ## Screenshot
 
-![MiniSynth v1.1 Screenshot](docs/images/mini_synth_v1.1.gif)
+[![MiniSynth v1.2 Screenshot](docs/images/mini_synth_v1.2.png)](https://youtu.be/MS1P31mTOy8)
 
 ---
-## 🎹 Features (v1.1)
+## 🎹 Features (v1.2)
 
-* A fully interactive, multi-octave piano keyboard GUI.
-* Visual feedback for both white keys (themed `ttk` widgets) and black keys (classic `tk` widgets).
-* Event handling for each key press, which prints the corresponding note to the console.
-* Clean, well-documented, and modular code structure with a professional entry point.
+* A multi-octave keyboard GUI built with Tkinter.
+* A real-time, callback-based audio engine for low-latency sound.
+* Note-on and note-off handling for sustained sine wave tones.
+* Thread-safe audio parameter updates using `threading.Lock`.
 
 ---
 ## 🛠️ Technologies Used
 
 * **Python 3:** The core programming language.
 * **Tkinter / ttk:** For building the graphical user interface.
+* **PyAudio:** For handling the audio stream to the sound card.
+* **NumPy:** For generating the sine wave audio data.
 * **Git & GitHub:** For version control.
 
 ---
@@ -38,13 +40,14 @@ A simple, multi-octave interactive piano keyboard built with Python's Tkinter li
     ```
 4.  Run the main script:
     ```bash
-    python mini_synth_v1.1.py
+    python mini_synth_v1.2.py
     ```
 
 ---
-## 🔜 Future Goals (for v1.1 and beyond)
+## 🔜 Future Goals
 
-* Implement a real-time audio engine with PyAudio and NumPy to produce sound.
+* **Object-Oriented GUI:** Encapsulate the keyboard creation logic into its own dedicated class.
+* **Waveform Selection:** Add the ability to switch between sine, square, and sawtooth waves.
 
 ---
 ## 🐛 Troubleshooting
@@ -56,7 +59,7 @@ On some Windows systems, the default terminal cannot display special Unicode cha
 1.  **Run from the Command Line with the UTF-8 flag:**
     Execute the script using this command instead of the standard one:
     ```bash
-    python -X utf8 mini_synth_v1.1.py
+    python -X utf8 mini_synth_v1.2.py
     ```
 
 2.  **Configure VS Code's Runner (`launch.json`):**
