@@ -1,16 +1,16 @@
-# MiniSynth v1.2
+# MiniSynth v1.3
 
 [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org) [![NumPy](https://img.shields.io/badge/Numpy-777BB4?style=for-the-badge&logo=numpy&logoColor=white)](https://numpy.org) [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/KostasTopouzis/MiniSynth)
 
-A simple, multi-octave synthesizer built with Python. This version introduces a real-time audio engine with a non-blocking callback architecture, allowing for sustained notes. This project serves as a foundational example of GUI development and real-time audio handling, created as part of a guided career development journey.
+A simple, multi-octave synthesizer built with Python. This version extends the playable range from C2 to E6 while simultaneously reducing the overall keyboard size in order to improve the future integration of the MiniSynth in a professional music production working environment. It also improves label readability by deriving named fonts from the system default for consistent, DPI-aware sizing and calculates key proportions relative to the screenwidth to avoid visual distortion in different display settings.
 
 ---
 ## Screenshot
 
-[![MiniSynth v1.2 Screenshot](docs/images/mini_synth_v1.2.png)](https://youtu.be/MS1P31mTOy8)
+[![MiniSynth v1.3 Screenshot](docs/images/mini_synth_v1.3.png)](https://youtu.be/106d25s4KaI)
 
 ---
-## 🎹 Features (v1.2)
+## Features (v1.3)
 
 * A multi-octave keyboard GUI built with Tkinter.
 * A real-time, callback-based audio engine for low-latency sound.
@@ -18,7 +18,26 @@ A simple, multi-octave synthesizer built with Python. This version introduces a 
 * Thread-safe audio parameter updates using `threading.Lock`.
 
 ---
-## 🛠️ Technologies Used
+
+## Changelog (v1.3 vs v1.2)
+
+This section highlights the notable differences between v1.3 and the previous v1.2 example.
+
+- Keyboard and layout
+    - v1.2 used fixed pixel dimensions and a small, two-octave keyboard. v1.3 switches to proportional sizing (based on the screen width) and ships a larger-range, but smaller-size 31-white-key keyboard. This improves usability when embedding MiniSynth in larger music production environments and across variable screen sizes.
+
+- Code structure & key generation
+    - v1.2 used nested loops per octave to create keys. v1.3 simplifies this with a single loop, computing octave and note offsets on the fly. This makes it easier to change keyboard length and reduces duplication.
+
+- Fonts and accessibility
+    - v1.3 creates named `tkFont.Font` objects derived from the system `TkDefaultFont` and applies them to both `ttk` and `tk` buttons. This brings consistency between widget types and improves label legibility (especially for two-line black-key labels), while being more DPI-friendly.
+
+- Other notes
+    - Small stylistic and documentation updates were added in v1.3 to clarify layout choices and to prepare for future UI encapsulation.
+
+---
+
+## Technologies Used
 
 * **Python 3:** The core programming language.
 * **Tkinter / ttk:** For building the graphical user interface.
@@ -27,7 +46,7 @@ A simple, multi-octave synthesizer built with Python. This version introduces a 
 * **Git & GitHub:** For version control.
 
 ---
-## 🚀 How to Run
+## How to Run
 
 1.  Ensure you have Python 3 installed on your system.
 2.  Clone this repository to your local machine:
@@ -40,17 +59,18 @@ A simple, multi-octave synthesizer built with Python. This version introduces a 
     ```
 4.  Run the main script:
     ```bash
-    python mini_synth_v1.2.py
+    python mini_synth_v1.3.py
     ```
 
 ---
-## 🔜 Future Goals
+## Future Goals
 
 * **Object-Oriented GUI:** Encapsulate the keyboard creation logic into its own dedicated class.
 * **Waveform Selection:** Add the ability to switch between sine, square, and sawtooth waves.
+* **Increased control and musical usufulness:** Add the ability to control through the computer keyboard and eventually a MIDI controller.
 
 ---
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### UnicodeEncodeError on Windows
 
@@ -59,7 +79,7 @@ On some Windows systems, the default terminal cannot display special Unicode cha
 1.  **Run from the Command Line with the UTF-8 flag:**
     Execute the script using this command instead of the standard one:
     ```bash
-    python -X utf8 mini_synth_v1.2.py
+    python -X utf8 mini_synth_v1.3.py
     ```
 
 2.  **Configure VS Code's Runner (`launch.json`):**
@@ -84,14 +104,14 @@ On some Windows systems, the default terminal cannot display special Unicode cha
     ```
 
 ---
-## 📝 License
+## License
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 This project is distributed under the MIT License. See the `LICENSE` file for the full text and details.
 
 ---
-## 📫 How to Reach Me
+## How to Reach Me
 
 I'm always open to connecting with other developers and musicians or discussing potential collaborations. Please feel free to reach out.
 
