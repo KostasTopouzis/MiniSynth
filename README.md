@@ -1,39 +1,23 @@
-# MiniSynth v1.3
+# MiniSynth v1.3.1
 
 [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org) [![NumPy](https://img.shields.io/badge/Numpy-777BB4?style=for-the-badge&logo=numpy&logoColor=white)](https://numpy.org) [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/KostasTopouzis/MiniSynth)
 
 A simple, multi-octave synthesizer built with Python. This version extends the playable range from C2 to E6 while simultaneously reducing the overall keyboard size in order to improve the future integration of the MiniSynth in a professional music production working environment. It also improves label readability by deriving named fonts from the system default for consistent, DPI-aware sizing and calculates key proportions relative to the screenwidth to avoid visual distortion in different display settings.
 
+See `CHANGELOG.md` for full release notes — latest: v1.3.1: Fix audible pop at note on/off (added short attack/release envelope; vectorized NumPy implementation).
+
 ---
 ## Screenshot
 
-[![MiniSynth v1.3 Screenshot](docs/images/mini_synth_v1.3.png)](https://youtu.be/106d25s4KaI)
+[![MiniSynth v1.3.1 Screenshot](docs/images/mini_synth_v1.3.1.png)](https://youtu.be/106d25s4KaI)
 
 ---
-## Features (v1.3)
+## Features (v1.3.1)
 
 * A multi-octave keyboard GUI built with Tkinter.
 * A real-time, callback-based audio engine for low-latency sound.
 * Note-on and note-off handling for sustained sine wave tones.
 * Thread-safe audio parameter updates using `threading.Lock`.
-
----
-
-## Changelog (v1.3 vs v1.2)
-
-This section highlights the notable differences between v1.3 and the previous v1.2 example.
-
-- Keyboard and layout
-    - v1.2 used fixed pixel dimensions and a small, two-octave keyboard. v1.3 switches to proportional sizing (based on the screen width) and ships a larger-range, but smaller-size 31-white-key keyboard. This improves usability when embedding MiniSynth in larger music production environments and across variable screen sizes.
-
-- Code structure & key generation
-    - v1.2 used nested loops per octave to create keys. v1.3 simplifies this with a single loop, computing octave and note offsets on the fly. This makes it easier to change keyboard length and reduces duplication.
-
-- Fonts and accessibility
-    - v1.3 creates named `tkFont.Font` objects derived from the system `TkDefaultFont` and applies them to both `ttk` and `tk` buttons. This brings consistency between widget types and improves label legibility (especially for two-line black-key labels), while being more DPI-friendly.
-
-- Other notes
-    - Small stylistic and documentation updates were added in v1.3 to clarify layout choices and to prepare for future UI encapsulation.
 
 ---
 
@@ -46,6 +30,19 @@ This section highlights the notable differences between v1.3 and the previous v1
 * **Git & GitHub:** For version control.
 
 ---
+
+## Performance & Benchmarks
+
+This version uses **vectorized NumPy operations** for the amplitude envelope (attack/release) instead of per-sample Python loops. This design choice significantly reduces CPU overhead and latency jitter in real-time audio callbacks. The benchmark typically shows a **5-10x speedup** on modern CPUs, with even greater gains during sustain phases, demonstrating the importance of efficient numerical computing in audio applications.
+
+To see the performance comparison between the per-sample and vectorized approaches and the real numbers for your system:
+
+```bash
+python benchmark_envelope.py
+```
+
+---
+
 ## How to Run
 
 1.  Ensure you have Python 3 installed on your system.
@@ -59,7 +56,7 @@ This section highlights the notable differences between v1.3 and the previous v1
     ```
 4.  Run the main script:
     ```bash
-    python mini_synth_v1.3.py
+    python mini_synth_v1.3.1.py
     ```
 
 ---
@@ -79,7 +76,7 @@ On some Windows systems, the default terminal cannot display special Unicode cha
 1.  **Run from the Command Line with the UTF-8 flag:**
     Execute the script using this command instead of the standard one:
     ```bash
-    python -X utf8 mini_synth_v1.3.py
+    python -X utf8 mini_synth_v1.3.1.py
     ```
 
 2.  **Configure VS Code's Runner (`launch.json`):**
