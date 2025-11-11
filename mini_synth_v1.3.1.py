@@ -1,12 +1,16 @@
 """
-MiniSynth v1.3
+MiniSynth v1.3.1
 
 A simple, multi-octave synthesizer built with Python's Tkinter GUI 
 toolkit and the PyAudio library. It features a basic synthesis engine 
 that generates sine wave tones for each key.
 
+This version fixes the problem of amplitude discontinuity by implementing 
+an attack/release amplitude envelope with vectorized NumPy operations for 
+efficient real-time audio generation without clicks or pops.
+
 Author: Kostas Topouzis
-Date: 04 November 2025
+Date: 11 November 2025
 """
 
 import tkinter as tk
@@ -21,7 +25,7 @@ import threading
 # --------------------------------
 
 # Version number (MAJOR.MINOR.PATCH format)
-APP_VERSION = "1.3"
+APP_VERSION = "1.3.1"
 
 # --- Audio Configuration ---
 SAMPLE_RATE = 44100  # Samples per second
@@ -74,31 +78,100 @@ class AudioEngine:
         self.sample_rate = sample_rate
         self.lock = threading.Lock()  # For safe access from threads
 
-    # Audio callback function
+        # --- Amplitude Envelope (Simple Attack/Release) ---
+        # These fields control the fade-in and fade-out to eliminate clicks/pops
+        self.amplitude = 0.0  # Current amplitude (0.0 to 1.0)
+        self.target_amplitude = 0.0  # Target amplitude we're ramping towards
+        self.amplitude_increment = 0.0  # How much to increase/decrease amplitude per sample
+        
+        # Attack and release time constants (in seconds)
+        self.attack_time = 0.01  # 10 ms fade-in (smooth attack)
+        self.release_time = 0.05  # 50 ms fade-out (smooth release)
+        self.max_volume = 0.3  # Peak volume multiplier
+        # Preallocate a reusable envelope buffer (float32) to avoid per-callback allocations
+        # Use the provided buffer_size so the buffer matches frames_per_buffer
+        self._env = np.zeros(buffer_size, dtype=np.float32)
+
     def audio_callback(self, in_data, frame_count, time_info, status):
         """
-        Continuously called by PyAudio to get 
-        the next chunk of audio.
+        Generates a sine wave multiplied by a smoothly-ramping amplitude envelope
+        to eliminate clicks and pops at note boundaries.
         """
         with self.lock:
-            t = np.arange(self.phase, self.phase + frame_count)
+            # --- Generate the sine wave carrier (float32) ---
+            t = np.arange(self.phase, self.phase + frame_count, dtype=np.float32)
             angle = 2 * np.pi * self.current_frequency * t / self.sample_rate
-            wave = 0.3 * np.sin(angle)
+            carrier = np.sin(angle).astype(np.float32)
+
+            # --- Vectorized amplitude envelope ---
+            env = self._env[:frame_count]  # view into preallocated buffer
+
+            # If already at target or no increment defined, fill constant
+            if self.amplitude == self.target_amplitude or self.amplitude_increment == 0:
+                env.fill(self.amplitude)
+            else:
+                # Determine direction of ramp (+1 or -1)
+                direction = 1.0 if self.target_amplitude > self.amplitude else -1.0
+                # Compute how many samples are needed to reach the target
+                # Guard against division by zero
+                if self.amplitude_increment > 0:
+                    samples_to_target = int(np.ceil(abs(self.target_amplitude - self.amplitude) / self.amplitude_increment))
+                else:
+                    samples_to_target = 0
+
+                if samples_to_target >= frame_count or samples_to_target <= 0:
+                    # Full buffer is part of the ramp (or immediate switch)
+                    inc = direction * self.amplitude_increment
+                    env[:] = (self.amplitude + inc * np.arange(frame_count, dtype=np.float32))
+                    # If we've overshot due to numerical reasons, clamp
+                    if direction > 0:
+                        np.clip(env, None, self.target_amplitude, out=env)
+                    else:
+                        np.clip(env, self.target_amplitude, None, out=env)
+                    self.amplitude = env[-1]
+                else:
+                    # Part ramp, then constant at target
+                    n = samples_to_target
+                    inc = direction * self.amplitude_increment
+                    env[:n] = (self.amplitude + inc * np.arange(n, dtype=np.float32))
+                    env[n:frame_count] = self.target_amplitude
+                    # Update amplitude to last sample value
+                    self.amplitude = env[-1]
+
+            # --- Combine carrier and envelope, multiply by peak volume ---
+            wave = carrier * env * self.max_volume
             self.phase += frame_count
+        
         return (wave.astype(np.float32).tobytes(), pyaudio.paContinue)
 
     def note_on(self, midi_note_number):
-        """Activates a note by its MIDI number."""
+        """
+        Activates a note by its MIDI number and starts the attack envelope.
+        """
         with self.lock:
             # Check if the MIDI note number is within the valid range (0-127)
             if 0 <= midi_note_number < 128:
                 self.current_frequency = self.midi_frequencies[midi_note_number]
                 self.phase = 0   # Reset phase to avoid clicking
+                
+                # Start the attack envelope: ramp amplitude from current level to max_volume
+                self.target_amplitude = self.max_volume
+                # Calculate the increment per sample: how much to add each callback sample
+                self.amplitude_increment = self.max_volume / (self.attack_time * self.sample_rate)
 
     def note_off(self, event=None):
-        """Deactivates the sound by setting the frequency to zero."""
+        """
+        Deactivates the sound by starting the release envelope
+        (smooth fade-out instead of abrupt stop).
+        """
         with self.lock:
-            self.current_frequency = 0.0
+            # Start the release envelope: ramp amplitude down to 0
+            self.target_amplitude = 0.0
+            # Calculate the decrement per sample: how much to subtract each callback sample
+            self.amplitude_increment = self.amplitude / (self.release_time * self.sample_rate)
+            # Clamp to avoid division by zero if amplitude is very small
+            if self.amplitude_increment < 0:
+                self.amplitude_increment = 0
 
     def start(self):
         """Starts the audio stream."""
