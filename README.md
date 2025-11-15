@@ -1,22 +1,23 @@
-# MiniSynth v1.3.1
+# MiniSynth v1.4
 
 [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org) [![NumPy](https://img.shields.io/badge/Numpy-777BB4?style=for-the-badge&logo=numpy&logoColor=white)](https://numpy.org) [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/KostasTopouzis/MiniSynth)
 
-A simple, multi-octave synthesizer built with Python. This version extends the playable range from C2 to E6 while simultaneously reducing the overall keyboard size in order to improve the future integration of the MiniSynth in a professional music production working environment. It also improves label readability by deriving named fonts from the system default for consistent, DPI-aware sizing and calculates key proportions relative to the screenwidth to avoid visual distortion in different display settings.
+A simple, multi-octave synthesizer built with Python. This version introduces a major architectural upgrade, transforming the synth from monophonic to **polyphonic**. It now features a more sophisticated **ADSR (Attack, Decay, Sustain, Release) envelope** and a refactored object-oriented structure that separates the audio engine from the GUI.
 
-See `CHANGELOG.md` for full release notes — latest: v1.3.1: Fix audible pop at note on/off (added short attack/release envelope; vectorized NumPy implementation).
+See `CHANGELOG.md` for full release notes — latest: v1.4: Added polyphony, ADSR envelope, and refactored GUI into its own class.
 
 ---
 ## Screenshot
 
-[![MiniSynth v1.3.1 Screenshot](docs/images/mini_synth_v1.3.1.png)](https://youtu.be/7Dj9_wVjeuQ)
+[![MiniSynth v1.4 Screenshot](docs/images/mini_synth_v1.4.png)](https://youtu.be/bQmLWdJsDRM)
 
 ---
-## Features (v1.3.1)
+## Features (v1.4)
 
-* A multi-octave keyboard GUI built with Tkinter.
-* A real-time, callback-based audio engine for low-latency sound.
-* Note-on and note-off handling for sustained sine wave tones.
+* A **polyphonic** audio engine capable of playing multiple notes simultaneously.
+* A multi-stage **ADSR (Attack, Decay, Sustain, Release) envelope** for each voice.
+* An object-oriented GUI, encapsulated in its own class for better structure.
+* Real-time, callback-based audio generation for low latency.
 * Thread-safe audio parameter updates using `threading.Lock`.
 
 ---
@@ -31,14 +32,14 @@ See `CHANGELOG.md` for full release notes — latest: v1.3.1: Fix audible pop at
 
 ---
 
-## Performance & Benchmarks
+## Performance: Vectorization vs. Polyphony
 
-This version uses **vectorized NumPy operations** for the amplitude envelope (attack/release) instead of per-sample Python loops. This design choice significantly reduces CPU overhead and latency jitter in real-time audio callbacks. The benchmark typically shows a **5-10x speedup** on modern CPUs, with even greater gains during sustain phases, demonstrating the importance of efficient numerical computing in audio applications.
+To enable polyphony, where each note requires its own independent envelope state, the audio callback was refactored from a vectorized NumPy approach (used in v1.3.1) to a **per-sample processing loop**. While a per-sample loop is less computationally efficient than a bulk vectorized operation, this change is necessary to manage the complexity of multiple overlapping voices. This represents a classic trade-off between raw performance and advanced features.
 
-To see the performance comparison between the per-sample and vectorized approaches and the real numbers for your system:
+To understand the performance difference between these two methods, you can still run the benchmark:
 
 ```bash
-python benchmark_envelope.py
+python benchmarks/benchmark_envelope.py
 ```
 
 ---
@@ -56,7 +57,7 @@ python benchmark_envelope.py
     ```
 4.  Run the main script:
     ```bash
-    python mini_synth_v1.3.1.py
+    python mini_synth_v1.4.py
     ```
 
 ---
@@ -76,7 +77,7 @@ On some Windows systems, the default terminal cannot display special Unicode cha
 1.  **Run from the Command Line with the UTF-8 flag:**
     Execute the script using this command instead of the standard one:
     ```bash
-    python -X utf8 mini_synth_v1.3.1.py
+    python -X utf8 mini_synth_v1.4.py
     ```
 
 2.  **Configure VS Code's Runner (`launch.json`):**
